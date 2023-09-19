@@ -394,7 +394,7 @@ graph LR
     end
     subgraph ss2["その他 Azure Data Services"]
         E["Azure Storage
-        Azure Search
+        Azure Cognitive Search
         Azure Synapse Analytics
         Cosmos DB for NoSQL
         (別コンテナー)"] 
