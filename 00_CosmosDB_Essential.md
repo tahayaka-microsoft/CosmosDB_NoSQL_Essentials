@@ -525,7 +525,7 @@ Cosmos DBの整合性レベルは以下５段階となる。
 
 同一リージョンに関しては"Strong"と同等、他のリージョンに関しては「設定されたK(バージョン)、もしくはT(時間)のどちらか短い方までのディレイを許容する」。
 
-![](https://learn.microsoft.com/ja-jp/azure/cosmos-db/media/consistency-levels/bounded-staleness-consistency.gif)
+
 
 #### セッション "Session" (デフォルト)
 
@@ -533,20 +533,13 @@ Cosmos DBの整合性レベルは以下５段階となる。
 
 別セッションでは順序の保証がされるが、ラグが発生する可能性がある。
 
-![](https://learn.microsoft.com/ja-jp/azure/cosmos-db/media/consistency-levels/session-consistency.gif)
-
 #### 一貫性のあるプレフィクス "Consistency Prefix"
 
 書き込まれたのちのすべての読み込みについて、順序は保証されるがラグの幅はまちまちとなる。
 
-![](https://learn.microsoft.com/ja-jp/azure/cosmos-db/media/consistency-levels/consistent-prefix.gif)
-
-
 #### 最終的 "Eventual"
 
 書き込まれたのちの読み込みは順序もラグも保証されない
-
-![](https://learn.microsoft.com/ja-jp/azure/cosmos-db/media/consistency-levels/eventual-consistency.gif)
 
 <!--
 
