@@ -341,7 +341,7 @@ npm install @azure/cosmos
    - `const endpoint =`からの4行にある接続に必要な情報は自身の環境の情報に置き換える。
    - 保存は`CTRL+S`、終了は`CTRL+Q`で行う。
 
-```
+```JavaScript
 // Cosmos DB Clientの作成
 const { CosmosClient } = require("@azure/cosmos");
 
@@ -463,7 +463,7 @@ pip install azure-cosmos
    - `url = `,`key =`,`database_name =`,`container_name =` の4行にある接続に必要な情報は自身の環境の情報に置き換える。
    - 保存は`CTRL+S`、終了は`CTRL+Q`で行う。
 
-```
+```Python
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
 import time
 
