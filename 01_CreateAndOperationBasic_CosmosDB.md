@@ -445,6 +445,103 @@ Deleted item with id 1695566789021
 
 - (Option) プログラム内のパラメータやデータなどを書き換えて再度実行し、動作を確認する。
 
+### Pythonの場合
+
+- Azure Cloud Shellを起動する
+- 以下のコマンドを実行してCosmosDBのアクセスに必要なライブラリをインストールする
+
+```
+pip install azure-cosmos
+```
+
+- Cloud Shellのエディタを **{}アイコンから** 起動して以下のプログラムを入力する。ファイルは`cosmosdb_test.py`という名前で保存する。
+   - `url = `,`key =`,`database_name =`,`container_name =` の4行にある接続に必要な情報は自身の環境の情報に置き換える。
+   - 保存は`CTRL+S`、終了は`CTRL+Q`で行う。
+
+```
+from azure.cosmos import CosmosClient, PartitionKey, exceptions
+import time
+
+url = "<YOUR DB URL>"
+key = '<YOUR DB KEY>'
+client = CosmosClient(url, credential=key)
+
+database_name = '<YOUR DATABASE>'
+database = client.get_database_client(database_name)
+
+container_name = '<YOUR CONTAINER>'
+container = database.get_container_client(container_name)
+
+def create_item(item_body):
+    container.create_item(body=item_body)
+
+def update_item(item_id, item_body):
+    read_item = container.read_item(item=item_id, partition_key=item_body['partitionKey'])
+    container.replace_item(item=read_item, body=item_body)
+
+def query_items(query):
+    items = list(container.query_items(
+        query=query,
+        enable_cross_partition_query=True
+    ))
+    return items
+
+def delete_item(item_id, pk):
+    container.delete_item(item=item_id, partition_key=pk)
+
+def main():
+    new_item = {'id': '1', 'name': 'Sample Item', 'description': 'This is a sample item.', 'partitionKey': 'pk'}
+    new_item['id'] = str(int(time.time()))
+
+    print("Creating item...")
+    create_item(new_item)
+    print(f"Created item with id {new_item['id']}")
+
+    print("Updating item...")
+    new_item['name'] = "Updated Sample Item"
+    update_item(new_item['id'], new_item)
+    print(f"Updated item with id {new_item['id']}")
+
+    query_spec = {
+        'query': "SELECT * FROM c WHERE c.name = @name",
+        'parameters': [
+            {'name': '@name', 'value': "Updated Sample Item"}
+        ]
+    }
+
+    items = query_items(query_spec)
+    print(f"Found {len(items)} item(s) where name = 'Updated Sample Item'")
+    for item in items:
+        print(f"  Item with id {item['id']}")
+
+    print("Deleting item..." + new_item['id'])
+    delete_item(new_item['id'], new_item['partitionKey'])
+    print(f"Deleted item with id {new_item['id']}")
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print("Error running sample:", e)
+```
+
+- ファイルを保存したら、`python cosmosdb_test.py`をCloud Shellに入力して実行する。
+  
+  ログが以下のように表示されれば成功。idは時間なので変化する。
+
+```
+Creating item...
+Created item with id 1695566789021
+Updating item...
+Updated item with id 1695566789021
+Found 1 item(s) where name = 'Updated Sample Item'
+  Item with id 1695566789021
+Deleting item...1695566789021
+Deleted item with id 1695566789021
+```
+
+- (Option) プログラム内のパラメータやデータなどを書き換えて再度実行し、動作を確認する。
+
 ## 管理操作
    - スループットの変更
       - データエクスプローラーの**データベースの下**にある"Scale"を選択  
