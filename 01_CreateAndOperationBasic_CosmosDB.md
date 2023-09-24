@@ -340,10 +340,10 @@ npm install @azure/cosmos
 // Cosmos DB Clientの作成
 const { CosmosClient } = require("@azure/cosmos");
 
-const endpoint = "https://tahayaka-cdb-nosql.documents.azure.com:443/";
-const key = "pEYKZIiWIPO9nYxUHhhnini1arimPG9G8a3fO8grhLpknHaizbbCr0nC0bYAxqJWVwDYw9ROHAO8ACDbojXCYw==";
-const databaseId = "db1";
-const containerId = "container1";
+const endpoint = "<YOUR DB URL>";
+const key = "<YOUR DB KEY>";
+const databaseId = "<YOUR DATABSE>";
+const containerId = "<YOUR CONTAINER>";
 
 const client = new CosmosClient({ endpoint, key });
 
