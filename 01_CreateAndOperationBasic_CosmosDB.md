@@ -322,6 +322,114 @@ WHERE c.sku = "teapo-surfboard-72109"
 ]
 ```
 
+## SDKを利用したデータの登録
+
+### Node.jsの場合
+
+- Azure Cloud Shellを起動する
+- 以下のコマンドを実行してCosmosDBのアクセスに必要なライブラリをインストールする
+```
+npm install @azure/cosmos
+```
+
+- Cloud Shellのエディタを **{}アイコンから** 起動して以下のプログラムを入力する。ファイルは`cosmosdb_test.js`という名前で保存する。
+   - `const endpoint =`からの4行にある接続に必要な情報は自身の環境の情報に置き換える。
+   - 保存は`CTRL+S`、終了は`CTRL+Q`で行う。
+
+```
+// Cosmos DB Clientの作成
+const { CosmosClient } = require("@azure/cosmos");
+
+const endpoint = "https://tahayaka-cdb-nosql.documents.azure.com:443/";
+const key = "pEYKZIiWIPO9nYxUHhhnini1arimPG9G8a3fO8grhLpknHaizbbCr0nC0bYAxqJWVwDYw9ROHAO8ACDbojXCYw==";
+const databaseId = "db1";
+const containerId = "container1";
+
+const client = new CosmosClient({ endpoint, key });
+
+// データの登録
+async function createItem(itemBody) {
+    const { item } = await client
+        .database(databaseId)
+        .container(containerId)
+        .items.create(itemBody);
+    return item;
+}
+
+// データの更新
+async function updateItem(itemId, itemBody) {
+    const { item } = await client
+        .database(databaseId)
+        .container(containerId)
+        .item(itemId)
+        .replace(itemBody);
+    return item;
+}
+
+// データのクエリ
+async function queryItems(querySpec) {
+    const { resources: items } = await client
+        .database(databaseId)
+        .container(containerId)
+        .items.query(querySpec)
+        .fetchAll();
+    return items;
+}
+
+// データの削除
+async function deleteItem(itemId,pk) {
+    await client
+        .database(databaseId)
+        .container(containerId)
+        .item(itemId,pk)
+        .delete();
+}
+
+async function main() {
+    const newItem = { id: "1", name: "Sample Item", description: "This is a sample item.",partitionKey:'pk' };
+
+    newItem.id = (new Date()).getTime().toString();
+
+    console.log("Creating item...");
+    const createdItem = await createItem(newItem);
+    console.log(`Created item with id ${createdItem.id}`);
+
+    console.log("Updating item...");
+    newItem.name = "Updated Sample Item";
+    const updatedItem = await updateItem(newItem.id, newItem);
+    console.log(`Updated item with id ${updatedItem.id}`);
+
+    const querySpec = {
+        query: "SELECT * FROM c WHERE c.name = @name",
+        parameters: [
+            {
+                name: "@name",
+                value: "Updated Sample Item"
+            }
+        ]
+    };
+
+    const queryItem = await queryItems(querySpec).then(items => {
+        console.log(`Found ${items.length} item(s) where name = 'Updated Sample Item'`);
+        items.forEach(item => {
+            console.log(`  Item with id ${item.id}`);
+        });
+    });
+
+    console.log("Deleting item..." + newItem.id);
+    await deleteItem(newItem.id,newItem.partitionKey);
+    console.log(`Deleted item with id ${newItem.id}`);
+}
+
+// main()でエラーが起こった場合
+main().catch(error => {
+    console.error("Error running sample:", error.message);
+});
+
+```
+
+
+
 ## 管理操作
    - スループットの変更
       - データエクスプローラーの**データベースの下**にある"Scale"を選択  
