@@ -428,6 +428,19 @@ main().catch(error => {
 
 ```
 
+- ファイルを保存したら、`node cosmosdb_test.js`をCloud Shellに入力して実行する。
+  ログが以下のように表示されれば成功。idは時間なので変化する。
+
+```
+Creating item...
+Created item with id 1695566789021
+Updating item...
+Updated item with id 1695566789021
+Found 1 item(s) where name = 'Updated Sample Item'
+  Item with id 1695566789021
+Deleting item...1695566789021
+Deleted item with id 1695566789021
+```
 
 
 ## 管理操作
