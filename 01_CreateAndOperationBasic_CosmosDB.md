@@ -682,7 +682,7 @@ Deleted item with id 638312130573498409
 Responseオブジェクトを確認することでこれらの情報を活用することができる。  
 (例: HTTPステータス429を見てリトライする、消費されたRUをログ出力,,,など)
 
-Node.jsの例
+#### Node.jsの例
 
 実行(途中略) : newItemにJSONが定義されている
 
@@ -691,7 +691,7 @@ res = await client.database(databaseId).container(containerId).items.create(newI
 ```
 
 結果
-```JSON
+```
 ItemResponse {
   resource: {
     id: '1',
