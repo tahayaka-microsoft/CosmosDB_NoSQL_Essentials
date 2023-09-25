@@ -672,6 +672,115 @@ Deleted item with id 638312130573498409
 
 - (Option) プログラム内のパラメータやデータなどを書き換えて再度実行し、動作を確認する。
 
+### (おまけ) RequestCharge
+
+各操作から得られるResponseオブジェクトには、
+- HTTPステータスコード
+- その操作で消費されたRU
+などの情報が入っている。
+
+Responseオブジェクトを確認することでこれらの情報を活用することができる。  
+(例: HTTPステータス429を見てリトライする、消費されたRUをログ出力,,,など)
+
+Node.jsの例
+
+実行(途中略) : newItemにJSONが定義されている
+
+```JavaScript
+res = await client.database(databaseId).container(containerId).items.create(newItem)
+```
+
+結果
+```JSON
+ItemResponse {
+  resource: {
+    id: '1',
+    name: 'Sample Item',
+    description: 'This is a sample item.',
+    partitionKey: 'pk',
+    _rid: 'dK5kAIbIPd4eAAAAAAAAAA==',
+    _self: 'dbs/dK5kAA==/colls/dK5kAIbIPd4=/docs/dK5kAIbIPd4eAAAAAAAAAA==/',
+    _etag: '"a7021a8a-0000-2300-0000-65113e0e0000"',
+    _attachments: 'attachments/',
+    _ts: 1695628814
+  },
+  headers: {
+    'content-length': '302',
+    date: 'Mon, 25 Sep 2023 08:00:14 GMT',
+    'content-type': 'application/json',
+    server: 'Compute',
+    'x-ms-gatewayversion': '2.0.0',
+    'x-ms-activity-id': '4e945d8e-44b5-4b89-b037-7b0dbe8a4dbf',
+    'x-ms-last-state-change-utc': 'Wed, 06 Sep 2023 10:49:01.137 GMT',
+    etag: '"a7021a8a-0000-2300-0000-65113e0e0000"',
+    'x-ms-resource-quota': 'documentSize=51200;documentsSize=52428800;documentsCount=-1;collectionSize=52428800;',
+    'x-ms-resource-usage': 'documentSize=0;documentsSize=7;documentsCount=0;collectionSize=7;',
+    'x-ms-schemaversion': '1.16',
+    lsn: '106944',
+    'x-ms-request-charge': '6.67',
+    'x-ms-alt-content-path': 'dbs/db1/colls/container1',
+    'x-ms-content-path': 'dK5kAIbIPd4=',
+    'x-ms-quorum-acked-lsn': '106943',
+    'x-ms-current-write-quorum': '3',
+    'x-ms-current-replica-set-size': '4',
+    'x-ms-documentdb-partitionkeyrangeid': '0',
+    'x-ms-xp-role': '1',
+    'x-ms-global-committed-lsn': '106943',
+    'x-ms-number-of-read-regions': '0',
+    'x-ms-transport-request-id': '29',
+    'x-ms-cosmos-llsn': '106944',
+    'x-ms-cosmos-quorum-acked-llsn': '106943',
+    'x-ms-session-token': '0:-1#106944',
+    'x-ms-request-duration-ms': '3.551',
+    'x-ms-serviceversion': 'version=2.14.0.0',
+    'x-ms-cosmos-physical-partition-id': 'b1fba8c3-ef76-44c8-933b-eb8aa8123954',
+    'x-ms-cosmos-capacity-type': '0',
+    'x-ms-throttle-retry-count': 0,
+    'x-ms-throttle-retry-wait-time-ms': 0
+  },
+  statusCode: 201,
+  diagnostics: CosmosDiagnostics {
+    clientSideRequestStatistics: {
+      requestStartTimeUTCInMs: 1695628813544,
+      requestDurationInMs: 1330,
+      totalRequestPayloadLengthInBytes: 90,
+      totalResponsePayloadLengthInBytes: 2449,
+      locationEndpointsContacted: [Array],
+      metadataDiagnostics: [Object],
+      retryDiagnostics: [Object],
+      gatewayStatistics: [Array]
+    },
+    diagnosticNode: undefined,
+    clientConfig: undefined
+  },
+  substatus: undefined,
+  item: Item {
+    container: Container {
+      database: [Database],
+      id: 'container1',
+      clientContext: [ClientContext],
+      '$items': [Items]
+    },
+    id: '1',
+    clientContext: ClientContext {
+      cosmosClientOptions: [Object],
+      globalEndpointManager: [GlobalEndpointManager],
+      clientConfig: [Object],
+      diagnosticLevel: 'info',
+      connectionPolicy: [Object],
+      sessionContainer: [SessionContainer],
+      partitionKeyDefinitionCache: [Object],
+      pipeline: null,
+      diagnosticFormatter: DefaultDiagnosticFormatter {},
+      diagnosticWriter: NoOpDiagnosticWriter {}
+    },
+    partitionKey: [ 'pk' ]
+  }
+}
+```
+
+
+
 ## 管理操作
    - スループットの変更
       - データエクスプローラーの**データベースの下**にある"Scale"を選択  
