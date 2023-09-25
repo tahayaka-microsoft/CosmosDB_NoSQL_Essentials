@@ -852,7 +852,8 @@ for i in range(10):  # 10回までリトライ
 ItemResponse<SampleItem> createdItemResponse = await container.CreateItemAsync(newItem, new PartitionKey(newItem.partitionKey));
 ```
 
-結果(container.client_connection.last_rensponse_headersの中身)  
+結果    
+
 `(Responseオブジェクト).RequestCharge`がRU消費量。  
 `StatusCode`が文字で入っているので注意
 
