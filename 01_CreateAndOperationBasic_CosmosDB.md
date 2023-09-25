@@ -833,16 +833,38 @@ container.client_connection.last_response_headers
   エラーをキャッチする形で取得する。下記に例を示す。
 
 ```Python
-for i in range(10):  # retry up to 10 times
+for i in range(10):  # 10回までリトライ
     try:
         created_item = container.create_item(body=item_body)
-        break  # if successful, break the loop
+        break  # もし成功したらループは抜ける
     except exceptions.CosmosHttpResponseError as e:
-        if e.status_code == 429:  # if status code is 429, wait and retry
+        if e.status_code == 429:  # もし429エラーだったら、待機してリトライ
             time.sleep(e.headers['x-ms-retry-after-ms'] / 1000)
-        else:  # for other errors, re-raise the exception
+        else:  # その他のコードの場合はraiseで改めて例外を発生する
             raise
 ```
+
+#### C#(.net)の場合
+
+実行(途中略) : newItemにJSONが定義されている
+
+```csharp
+ItemResponse<SampleItem> createdItemResponse = await container.CreateItemAsync(newItem, new PartitionKey(newItem.partitionKey));
+```
+
+結果(container.client_connection.last_rensponse_headersの中身)  
+`(Responseオブジェクト).RequestCharge`がRU消費量。  
+`StatusCode`が文字で入っているので注意
+
+```
+> createdItemResponse
+ItemResponse<Submission#13.SampleItem> { ActivityId="b989e29e-320c-4044-b993-c30140b63bb3", ActivityId="b989e29e-320c-4044-b993-c30140b63bb3", Diagnostics=[{"Summary":{"DirectCalls":{"(201, 0)":1},"RegionsContacted":1,"GatewayCalls":{"(200, 0)":2,"(304, 0)":1}},"name":"CreateItemAsync","id":"69cc6497-3a39-4be3-abb0-fa7b81ff48cf","start time":"08:51:11:958","duration in milliseconds":2331.3475,"data":{"Client Configuration":{"Client Created Time Utc":"2023-09-25T08:51:11.9322061Z","NumberOfClientsCreated":1,"NumberOfActiveClients":1,"User Agent":"cosmos-netstandard-sdk/3.26.0|3.24.1|1|X64|Linux 5.10.102.2-microsoft-sta|.NET 7.0.11|N|","ConnectionConfig":{"gw":"(cps:50, urto:10, p:False, httpf: False)","rntbd":"(cto: 5, icto: -1, mrpc: 30, mcpe: 65535, erd: True, pr: ReuseUnicastPort)","other":"(ed:False, be:False)"},"ConsistencyConfig":"(consistency: NotSet, prgns:[])"}},"children":[{"name":"ItemSerialize","id":"a545f02e-3b98-4958-b674-f6731f183577","start time":"08:51:11:966","duration in milliseconds":148.37...
+> createdItemResponse.RequestCharge
+6.67
+> createdItemResponse.StatusCode
+Created
+```
+
 
 ## 管理操作
    - スループットの変更
