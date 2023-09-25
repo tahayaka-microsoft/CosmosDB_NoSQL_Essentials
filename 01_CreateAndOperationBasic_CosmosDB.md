@@ -672,7 +672,7 @@ Deleted item with id 638312130573498409
 
 - (Option) プログラム内のパラメータやデータなどを書き換えて再度実行し、動作を確認する。
 
-### (おまけ) RequestCharge
+### (おまけ) Responseオブジェクトから情報を取得する
 
 各操作から得られるResponseオブジェクトには、
 - HTTPステータスコード
@@ -829,6 +829,20 @@ container.client_connection.last_response_headers
 }
 ```
 
+- Pythonの場合はメソッドの戻り値でHTTPステータスコードを直接取得する方法がない。  
+  エラーをキャッチする形で取得する。下記に例を示す。
+
+```Python
+for i in range(10):  # retry up to 10 times
+    try:
+        created_item = container.create_item(body=item_body)
+        break  # if successful, break the loop
+    except exceptions.CosmosHttpResponseError as e:
+        if e.status_code == 429:  # if status code is 429, wait and retry
+            time.sleep(e.headers['x-ms-retry-after-ms'] / 1000)
+        else:  # for other errors, re-raise the exception
+            raise
+```
 
 ## 管理操作
    - スループットの変更
