@@ -676,11 +676,11 @@ Deleted item with id 638312130573498409
 
 各操作から得られるResponseオブジェクトには、
 - HTTPステータスコード
-- その操作で消費されたRU
+- その操作で消費されたRU  
 などの情報が入っている。
 
 Responseオブジェクトを確認することでこれらの情報を活用することができる。  
-(例: HTTPステータス429を見てリトライする、消費されたRUをログ出力,,,など)
+(例: HTTPステータス429を見てリトライする、消費されたRUをログ出力...など)
 
 #### Node.jsの例
 
@@ -690,7 +690,9 @@ Responseオブジェクトを確認することでこれらの情報を活用す
 res = await client.database(databaseId).container(containerId).items.create(newItem)
 ```
 
-結果
+結果(resの中身)  
+headers['x-ms-request-charge']がRU消費量
+
 ```
 ItemResponse {
   resource: {
@@ -779,6 +781,53 @@ ItemResponse {
 }
 ```
 
+#### Pythonの例
+
+実行(途中略) : newItemにJSONが定義されている
+
+```Python
+container.create_item(newItem)
+container.client_connection.last_response_headers
+```
+
+結果(container.client_connection.last_rensponse_headersの中身)  
+'x-ms-request-charge'がRU消費量
+
+```
+{
+   'Content-Length': '311',
+   'Date': 'Mon, 25 Sep 2023 08:10:26 GMT',
+   'Content-Type': 'application/json',
+   'Server': 'Compute',
+   'x-ms-gatewayversion': '2.0.0',
+   'x-ms-activity-id': 'e8caca02-a874-4308-808e-00fa514456f6',
+   'x-ms-last-state-change-utc': 'Wed, 06 Sep 2023 10:49:01.137 GMT',
+   'etag': '"a70274a7-0000-2300-0000-651140730000"',
+   'x-ms-resource-quota': 'documentSize=51200;documentsSize=52428800;documentsCount=-1;collectionSize=52428800;',
+   'x-ms-resource-usage': 'documentSize=0;documentsSize=7;documentsCount=1;collectionSize=7;',
+   'x-ms-schemaversion': '1.16',
+   'lsn': '106945',
+   'x-ms-request-charge': '6.67',
+   'x-ms-alt-content-path': 'dbs/db1/colls/container1',
+   'x-ms-content-path': 'dK5kAIbIPd4=',
+   'x-ms-quorum-acked-lsn': '106944',
+   'x-ms-current-write-quorum': '3',
+   'x-ms-current-replica-set-size': '4',
+   'x-ms-documentdb-partitionkeyrangeid': '0',
+   'x-ms-xp-role': '1',
+   'x-ms-global-Committed-lsn': '106944',
+   'x-ms-number-of-read-regions': '0',
+   'x-ms-transport-request-id': '31',
+   'x-ms-cosmos-llsn': '106945',
+   'x-ms-cosmos-quorum-acked-llsn': '106944',
+   'x-ms-session-token': '0:-1#106945',
+   'x-ms-request-duration-ms': '3.24',
+   'x-ms-serviceversion': 'version=2.14.0.0',
+   'x-ms-cosmos-physical-partition-id':
+   'b1fba8c3-ef76-44c8-933b-eb8aa8123954',
+   'x-ms-cosmos-capacity-type': '0'
+}
+```
 
 
 ## 管理操作
