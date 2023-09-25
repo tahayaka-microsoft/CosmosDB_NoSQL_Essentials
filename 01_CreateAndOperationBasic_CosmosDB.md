@@ -547,6 +547,100 @@ Deleted item with id 1695566789021
 
 - (Option) プログラム内のパラメータやデータなどを書き換えて再度実行し、動作を確認する。
 
+### C#(.net)の場合
+
+- Azure Cloud Shellを起動する
+- 以下のコマンドを実行してスクリプト実行に必要なライブラリをインストールする
+```
+dotnet tool install --global dotnet-script
+```
+
+- Cloud Shellのエディタを **{}アイコンから** 起動して以下のプログラムを入力する。ファイルは`cosmosdb_test.csx`という名前で保存する。
+   - `"<YOUR CosmosDB URL>"`,`"<YOUR CosmosDB KEY>"`,`"<YOUR DATABASE NAME>"`,`"<YOUR CONTAINER NAME>"` の4行にある接続に必要な情報は自身の環境の情報に置き換える。
+   - 保存は`CTRL+S`、終了は`CTRL+Q`で行う。
+
+```
+#r "nuget: Microsoft.Azure.Cosmos, 3.25.1"
+
+using System;
+using System.Threading.Tasks;
+using Microsoft.Azure.Cosmos;
+
+private static readonly string EndpointUrl = "<YOUR CosmosDB URL>";
+private static readonly string AuthorizationKey = "<YOUR CosmosDB KEY>";
+private static readonly string DatabaseId = "<YOUR DATABASE NAME>";
+private static readonly string ContainerId = "<YOUR CONTAINER NAME>";
+
+private static CosmosClient cosmosClient = new CosmosClient(EndpointUrl, AuthorizationKey);
+private static Container container = cosmosClient.GetContainer(DatabaseId, ContainerId);
+
+public class SampleItem
+{
+    public string id { get; set; }
+    public string name { get; set; }
+    public string description { get; set; }
+    public string partitionKey { get; set; }
+}
+
+public async Task Main()
+{
+    try
+    {
+        SampleItem newItem = new SampleItem { id = DateTime.Now.Ticks.ToString(), name = "Sample Item", description = "This is a sample item.", partitionKey = "pk" };
+
+        Console.WriteLine("Creating item...");
+        ItemResponse<SampleItem> createdItemResponse = await container.CreateItemAsync(newItem, new PartitionKey(newItem.partitionKey));
+        Console.WriteLine($"Created item with id {createdItemResponse.Resource.id}");
+
+        Console.WriteLine("Updating item...");
+        newItem.name = "Updated Sample Item";
+        ItemResponse<SampleItem> updatedItemResponse = await container.ReplaceItemAsync(newItem, newItem.id, new PartitionKey(newItem.partitionKey));
+        Console.WriteLine($"Updated item with id {updatedItemResponse.Resource.id}");
+
+        var sqlQueryText = "SELECT * FROM c WHERE c.name = @name";
+        QueryDefinition queryDefinition = new QueryDefinition(sqlQueryText).WithParameter("@name", "Updated Sample Item");
+        FeedIterator<SampleItem> queryResultSetIterator = container.GetItemQueryIterator<SampleItem>(queryDefinition);
+
+        Console.WriteLine("Running query...");
+        while (queryResultSetIterator.HasMoreResults)
+        {
+            FeedResponse<SampleItem> currentResultSet = await queryResultSetIterator.ReadNextAsync();
+            foreach (var item in currentResultSet)
+            {
+                Console.WriteLine($"  Item with id {item.id}");
+            }
+        }
+
+        Console.WriteLine($"Deleting item... {newItem.id}");
+        await container.DeleteItemAsync<SampleItem>(newItem.id, new PartitionKey(newItem.partitionKey));
+        Console.WriteLine($"Deleted item with id {newItem.id}");
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Error running sample: {ex.Message}");
+    }
+}
+
+// Main関数を同期的に呼び出す
+await Main();
+```
+- ファイルを保存したら、`dotnet script cosmosdb_test.csx`をCloud Shellに入力して実行する。
+  
+  ログが以下のように表示されれば成功。idは時間なので変化する。
+
+```
+Creating item...
+Created item with id 638312130573498409
+Updating item...
+Updated item with id 638312130573498409
+Running query...
+  Item with id 638312130573498409
+Deleting item... 638312130573498409
+Deleted item with id 638312130573498409
+```
+
+- (Option) プログラム内のパラメータやデータなどを書き換えて再度実行し、動作を確認する。
+
 ## 管理操作
    - スループットの変更
       - データエクスプローラーの**データベースの下**にある"Scale"を選択  
