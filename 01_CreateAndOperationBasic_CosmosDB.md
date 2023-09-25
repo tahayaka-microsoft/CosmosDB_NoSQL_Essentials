@@ -391,19 +391,25 @@ async function deleteItem(itemId,pk) {
 }
 
 async function main() {
+
+    // アイテムの定義
     const newItem = { id: "1", name: "Sample Item", description: "This is a sample item.",partitionKey:'pk' };
 
+    // idはUNIX時間とする
     newItem.id = (new Date()).getTime().toString();
 
+    // アイテム登録
     console.log("Creating item...");
     const createdItem = await createItem(newItem);
     console.log(`Created item with id ${createdItem.id}`);
 
+    // アイテム更新
     console.log("Updating item...");
     newItem.name = "Updated Sample Item";
     const updatedItem = await updateItem(newItem.id, newItem);
     console.log(`Updated item with id ${updatedItem.id}`);
 
+    // アイテムクエリ
     const querySpec = {
         query: "SELECT * FROM c WHERE c.name = @name",
         parameters: [
@@ -414,6 +420,7 @@ async function main() {
         ]
     };
 
+    // クエリしたアイテムをフェッチ
     const queryItem = await queryItems(querySpec).then(items => {
         console.log(`Found ${items.length} item(s) where name = 'Updated Sample Item'`);
         items.forEach(item => {
@@ -421,6 +428,7 @@ async function main() {
         });
     });
 
+    // アイテム削除
     console.log("Deleting item..." + newItem.id);
     await deleteItem(newItem.id,newItem.partitionKey);
     console.log(`Deleted item with id ${newItem.id}`);
@@ -467,6 +475,7 @@ pip install azure-cosmos
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
 import time
 
+# 接続情報
 url = "<YOUR DB URL>"
 key = '<YOUR DB KEY>'
 client = CosmosClient(url, credential=key)
@@ -477,13 +486,16 @@ database = client.get_database_client(database_name)
 container_name = '<YOUR CONTAINER>'
 container = database.get_container_client(container_name)
 
+# アイテム作成
 def create_item(item_body):
     container.create_item(body=item_body)
 
+# アイテム更新
 def update_item(item_id, item_body):
     read_item = container.read_item(item=item_id, partition_key=item_body['partitionKey'])
     container.replace_item(item=read_item, body=item_body)
 
+# アイテムクエリ
 def query_items(query):
     items = list(container.query_items(
         query=query,
@@ -491,22 +503,30 @@ def query_items(query):
     ))
     return items
 
+# アイテム削除
 def delete_item(item_id, pk):
     container.delete_item(item=item_id, partition_key=pk)
 
 def main():
+
+    # アイテム定義
     new_item = {'id': '1', 'name': 'Sample Item', 'description': 'This is a sample item.', 'partitionKey': 'pk'}
+
+    # idはUNIX時間を設定
     new_item['id'] = str(int(time.time()))
 
+    # アイテム登録
     print("Creating item...")
     create_item(new_item)
     print(f"Created item with id {new_item['id']}")
 
+    # アイテム更新
     print("Updating item...")
     new_item['name'] = "Updated Sample Item"
     update_item(new_item['id'], new_item)
     print(f"Updated item with id {new_item['id']}")
 
+    # アイテムクエリ
     query_spec = {
         'query': "SELECT * FROM c WHERE c.name = @name",
         'parameters': [
@@ -514,11 +534,13 @@ def main():
         ]
     }
 
+    # クエリしたアイテムをフェッチ
     items = query_items(query_spec)
     print(f"Found {len(items)} item(s) where name = 'Updated Sample Item'")
     for item in items:
         print(f"  Item with id {item['id']}")
 
+    # アイテム削除
     print("Deleting item..." + new_item['id'])
     delete_item(new_item['id'], new_item['partitionKey'])
     print(f"Deleted item with id {new_item['id']}")
@@ -566,6 +588,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 
+// 接続情報
 private static readonly string EndpointUrl = "<YOUR CosmosDB URL>";
 private static readonly string AuthorizationKey = "<YOUR CosmosDB KEY>";
 private static readonly string DatabaseId = "<YOUR DATABASE NAME>";
@@ -574,6 +597,7 @@ private static readonly string ContainerId = "<YOUR CONTAINER NAME>";
 private static CosmosClient cosmosClient = new CosmosClient(EndpointUrl, AuthorizationKey);
 private static Container container = cosmosClient.GetContainer(DatabaseId, ContainerId);
 
+// アイテムクラス
 public class SampleItem
 {
     public string id { get; set; }
@@ -586,21 +610,27 @@ public async Task Main()
 {
     try
     {
+
+        // アイテム定義
         SampleItem newItem = new SampleItem { id = DateTime.Now.Ticks.ToString(), name = "Sample Item", description = "This is a sample item.", partitionKey = "pk" };
 
+        // アイテム作成
         Console.WriteLine("Creating item...");
         ItemResponse<SampleItem> createdItemResponse = await container.CreateItemAsync(newItem, new PartitionKey(newItem.partitionKey));
         Console.WriteLine($"Created item with id {createdItemResponse.Resource.id}");
 
+        // アイテム更新
         Console.WriteLine("Updating item...");
         newItem.name = "Updated Sample Item";
         ItemResponse<SampleItem> updatedItemResponse = await container.ReplaceItemAsync(newItem, newItem.id, new PartitionKey(newItem.partitionKey));
         Console.WriteLine($"Updated item with id {updatedItemResponse.Resource.id}");
 
+        // アイテムクエリ
         var sqlQueryText = "SELECT * FROM c WHERE c.name = @name";
         QueryDefinition queryDefinition = new QueryDefinition(sqlQueryText).WithParameter("@name", "Updated Sample Item");
         FeedIterator<SampleItem> queryResultSetIterator = container.GetItemQueryIterator<SampleItem>(queryDefinition);
 
+        // クエリしたアイテムをフェッチ
         Console.WriteLine("Running query...");
         while (queryResultSetIterator.HasMoreResults)
         {
@@ -611,6 +641,7 @@ public async Task Main()
             }
         }
 
+        // アイテムを削除
         Console.WriteLine($"Deleting item... {newItem.id}");
         await container.DeleteItemAsync<SampleItem>(newItem.id, new PartitionKey(newItem.partitionKey));
         Console.WriteLine($"Deleted item with id {newItem.id}");
