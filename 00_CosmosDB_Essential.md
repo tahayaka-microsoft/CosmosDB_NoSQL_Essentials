@@ -540,11 +540,15 @@ Cosmos DBの整合性レベルは以下５段階となる。
 
 書き込まれたのちのすべての読み込みについて、順序は保証されるがラグの幅はまちまちとなる。
 
-![](https://learn.microsoft.com/ja-jp/azure/cosmos-db/media/consistency-levels/consisitency-prefix-consistency.gif)
+![](https://learn.microsoft.com/ja-jp/azure/cosmos-db/media/consistency-levels/consistent-prefix.gif)
+
 
 #### 最終的 "Eventual"
 
 書き込まれたのちの読み込みは順序もラグも保証されない
+
+![](https://learn.microsoft.com/ja-jp/azure/cosmos-db/media/consistency-levels/eventual-consistency.gif)
+
 
 <!--
 
