@@ -53,7 +53,7 @@
 |---|---|---|
 |Database Id|データベース名(必須)| Existingを選択し、db1 |
 |Container Id|コンテナー名(必須)|container1|
-|Partition Key|パーティションキー| /id |
+|Partition Key|パーティションキー| /partitionKey |
 
 その他はデフォルトでOK
 
