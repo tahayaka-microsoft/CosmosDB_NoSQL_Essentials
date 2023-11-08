@@ -85,6 +85,7 @@
       "state" : "NY",
       "zip"   : "12345"
    }
+   ,"partitionKey" : "pk1"
 }
 ```
 
@@ -122,6 +123,7 @@ Save後、システムプロパティが付きリストに登録されること�
     { "name": "Tail Shape: Swallow" },
     { "name": "Color Group: Purple" }
   ]
+   ,"partitionKey" : "pk1"
 }
 ```
 
@@ -141,6 +143,7 @@ Save後、システムプロパティが付きリストに登録されること�
     { "name": "Color Group: Yellow" },
     { "name": "Bag Shape: Mummy" }
   ]
+   ,"partitionKey" : "pk1"
 }
 ```
 
@@ -205,6 +208,7 @@ SELECT * FROM c
                 "name": "Color Group: Purple"
             }
         ],
+        "partitionKey" : "pk1",
         "_rid": "OsMpAKRdg3MBAAAAAAAAAA==",
         "_self": "dbs/OsMpAA==/colls/OsMpAKRdg3M=/docs/OsMpAKRdg3MBAAAAAAAAAA==/",
         "_etag": "\"c600c175-0000-0700-0000-64a4f7960000\"",
@@ -228,6 +232,7 @@ SELECT * FROM c
                 "name": "Bag Shape: Mummy"
             }
         ],
+        ,"partitionKey" : "pk1"
         "_rid": "OsMpAKRdg3MCAAAAAAAAAA==",
         "_self": "dbs/OsMpAA==/colls/OsMpAKRdg3M=/docs/OsMpAKRdg3MCAAAAAAAAAA==/",
         "_etag": "\"c600c275-0000-0700-0000-64a4f7a50000\"",
@@ -264,6 +269,7 @@ WHERE c.categoryName = "Sleeping Bags"
                 "name": "Bag Shape: Mummy"
             }
         ],
+        "partitionKey" : "pk1",
         "_rid": "OsMpAKRdg3MCAAAAAAAAAA==",
         "_self": "dbs/OsMpAA==/colls/OsMpAKRdg3M=/docs/OsMpAKRdg3MCAAAAAAAAAA==/",
         "_etag": "\"c600c275-0000-0700-0000-64a4f7a50000\"",
