@@ -580,7 +580,7 @@ Deleted item with id 1695566789021
 
 - (Option) プログラム内のパラメータやデータなどを書き換えて再度実行し、動作を確認する。
 
-### C#(.net)の場合
+### C#(.NET)の場合
 
 - Azure Cloud Shellを起動する
 - 以下のコマンドを実行してスクリプト実行に必要なライブラリをインストールする
@@ -848,7 +848,7 @@ for i in range(10):  # 10回までリトライ
             raise
 ```
 
-#### C#(.net)の場合
+#### C#(.NET)の場合
 
 実行(途中略) : newItemにJSONが定義されている
 
@@ -859,7 +859,7 @@ ItemResponse<SampleItem> createdItemResponse = await container.CreateItemAsync(n
 結果    
 
 `(Responseオブジェクト).RequestCharge`がRU消費量。  
-`StatusCode`が文字で入っているので注意
+`StatusCode`は`System.Net.HttpStatusCode`列挙型なので比較する場合には`System.Net.HttpStatusCode.Created`などで比較する。
 
 ```
 > createdItemResponse
