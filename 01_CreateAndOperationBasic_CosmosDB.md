@@ -859,7 +859,7 @@ ItemResponse<SampleItem> createdItemResponse = await container.CreateItemAsync(n
 結果    
 
 `(Responseオブジェクト).RequestCharge`がRU消費量。  
-`StatusCode`は`System.Net.HttpStatusCode`列挙型なので比較する場合には`System.Net.HttpStatusCode.Created`などで比較する。
+`StatusCode`は`System.Net.HttpStatusCode`列挙型なので比較する場合には`System.Net.HttpStatusCode.Created`などと比較して判定する。
 
 ```
 > createdItemResponse
