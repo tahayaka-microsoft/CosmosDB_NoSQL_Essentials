@@ -592,7 +592,7 @@ dotnet tool install --global dotnet-script
    - `"<YOUR CosmosDB URL>"`,`"<YOUR CosmosDB KEY>"`,`"<YOUR DATABASE NAME>"`,`"<YOUR CONTAINER NAME>"` の4行にある接続に必要な情報は自身の環境の情報に置き換える。
    - 保存は`CTRL+S`、終了は`CTRL+Q`で行う。
 
-```
+```csharp
 #r "nuget: Microsoft.Azure.Cosmos, 3.25.1"
 
 using System;
