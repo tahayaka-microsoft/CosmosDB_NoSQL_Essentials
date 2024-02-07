@@ -580,7 +580,7 @@ Deleted item with id 1695566789021
 
 - (Option) プログラム内のパラメータやデータなどを書き換えて再度実行し、動作を確認する。
 
-### C#(.net)の場合
+### C#(.NET)の場合
 
 - Azure Cloud Shellを起動する
 - 以下のコマンドを実行してスクリプト実行に必要なライブラリをインストールする
@@ -592,7 +592,7 @@ dotnet tool install --global dotnet-script
    - `"<YOUR CosmosDB URL>"`,`"<YOUR CosmosDB KEY>"`,`"<YOUR DATABASE NAME>"`,`"<YOUR CONTAINER NAME>"` の4行にある接続に必要な情報は自身の環境の情報に置き換える。
    - 保存は`CTRL+S`、終了は`CTRL+Q`で行う。
 
-```
+```csharp
 #r "nuget: Microsoft.Azure.Cosmos, 3.25.1"
 
 using System;
@@ -600,71 +600,64 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 
 // 接続情報
-private static readonly string EndpointUrl = "<YOUR CosmosDB URL>";
-private static readonly string AuthorizationKey = "<YOUR CosmosDB KEY>";
-private static readonly string DatabaseId = "<YOUR DATABASE NAME>";
-private static readonly string ContainerId = "<YOUR CONTAINER NAME>";
+const string EndpointUrl = "<YOUR CosmosDB URL>";
+const string AuthorizationKey = "<YOUR CosmosDB KEY>";
+const string DatabaseId = "<YOUR DATABASE NAME>";
+const string ContainerId = "<YOUR CONTAINER NAME>";
 
-private static CosmosClient cosmosClient = new CosmosClient(EndpointUrl, AuthorizationKey);
-private static Container container = cosmosClient.GetContainer(DatabaseId, ContainerId);
+static CosmosClient cosmosClient = new(EndpointUrl, AuthorizationKey);
+static Container container = cosmosClient.GetContainer(DatabaseId, ContainerId);
 
 // アイテムクラス
-public class SampleItem
-{
-    public string id { get; set; }
-    public string name { get; set; }
-    public string description { get; set; }
-    public string partitionKey { get; set; }
-}
+record SampleItem(string id, string name, string description, string partitionKey);
 
-public async Task Main()
+async Task Main()
 {
-    try
+    // アイテム定義
+    var newItem = new SampleItem(DateTime.Now.Ticks.ToString(), "Sample Item", "This is a sample item.", "pk" );
+
+    // アイテム作成
+    Console.WriteLine("Creating item...");
+    var createdItemResponse = await container.CreateItemAsync(newItem, new(newItem.partitionKey));
+    Console.WriteLine($"Created item with id {createdItemResponse.Resource.id}");
+
+    // アイテム更新
+    Console.WriteLine("Updating item...");
+    newItem = newItem with { name = "Updated Sample Item" };
+    var updatedItemResponse = await container.ReplaceItemAsync(newItem, newItem.id, new(newItem.partitionKey));
+    Console.WriteLine($"Updated item with id {updatedItemResponse.Resource.id}");
+
+    // アイテムクエリ
+    var sqlQueryText = "SELECT * FROM c WHERE c.name = @name";
+    var queryDefinition = new QueryDefinition(sqlQueryText).WithParameter("@name", "Updated Sample Item");
+    var queryResultSetIterator = container.GetItemQueryIterator<SampleItem>(queryDefinition);
+
+    // クエリしたアイテムをフェッチ
+    Console.WriteLine("Running query...");
+    while (queryResultSetIterator.HasMoreResults)
     {
-
-        // アイテム定義
-        SampleItem newItem = new SampleItem { id = DateTime.Now.Ticks.ToString(), name = "Sample Item", description = "This is a sample item.", partitionKey = "pk" };
-
-        // アイテム作成
-        Console.WriteLine("Creating item...");
-        ItemResponse<SampleItem> createdItemResponse = await container.CreateItemAsync(newItem, new PartitionKey(newItem.partitionKey));
-        Console.WriteLine($"Created item with id {createdItemResponse.Resource.id}");
-
-        // アイテム更新
-        Console.WriteLine("Updating item...");
-        newItem.name = "Updated Sample Item";
-        ItemResponse<SampleItem> updatedItemResponse = await container.ReplaceItemAsync(newItem, newItem.id, new PartitionKey(newItem.partitionKey));
-        Console.WriteLine($"Updated item with id {updatedItemResponse.Resource.id}");
-
-        // アイテムクエリ
-        var sqlQueryText = "SELECT * FROM c WHERE c.name = @name";
-        QueryDefinition queryDefinition = new QueryDefinition(sqlQueryText).WithParameter("@name", "Updated Sample Item");
-        FeedIterator<SampleItem> queryResultSetIterator = container.GetItemQueryIterator<SampleItem>(queryDefinition);
-
-        // クエリしたアイテムをフェッチ
-        Console.WriteLine("Running query...");
-        while (queryResultSetIterator.HasMoreResults)
+        var currentResultSet = await queryResultSetIterator.ReadNextAsync();
+        foreach (var item in currentResultSet)
         {
-            FeedResponse<SampleItem> currentResultSet = await queryResultSetIterator.ReadNextAsync();
-            foreach (var item in currentResultSet)
-            {
-                Console.WriteLine($"  Item with id {item.id}");
-            }
+            Console.WriteLine($"  Item with id {item.id}");
         }
+    }
 
-        // アイテムを削除
-        Console.WriteLine($"Deleting item... {newItem.id}");
-        await container.DeleteItemAsync<SampleItem>(newItem.id, new PartitionKey(newItem.partitionKey));
-        Console.WriteLine($"Deleted item with id {newItem.id}");
-    }
-    catch (Exception ex)
-    {
-        Console.Error.WriteLine($"Error running sample: {ex.Message}");
-    }
+    // アイテムを削除
+    Console.WriteLine($"Deleting item... {newItem.id}");
+    await container.DeleteItemAsync<SampleItem>(newItem.id, new(newItem.partitionKey));
+    Console.WriteLine($"Deleted item with id {newItem.id}");
 }
 
-// Main関数を同期的に呼び出す
-await Main();
+try
+{
+    // Main関数を同期的に呼び出す
+    await Main();
+}
+catch (Exception e)
+{
+    Console.Error.WriteLine($"Error running sample; {e}");
+}
 ```
 - ファイルを保存したら、`dotnet script cosmosdb_test.csx`をCloud Shellに入力して実行する。
   
@@ -855,7 +848,7 @@ for i in range(10):  # 10回までリトライ
             raise
 ```
 
-#### C#(.net)の場合
+#### C#(.NET)の場合
 
 実行(途中略) : newItemにJSONが定義されている
 
@@ -866,7 +859,7 @@ ItemResponse<SampleItem> createdItemResponse = await container.CreateItemAsync(n
 結果    
 
 `(Responseオブジェクト).RequestCharge`がRU消費量。  
-`StatusCode`が文字で入っているので注意
+`StatusCode`は`System.Net.HttpStatusCode`列挙型なので比較する場合には`System.Net.HttpStatusCode.Created`などと比較して判定する。
 
 ```
 > createdItemResponse
