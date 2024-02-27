@@ -71,3 +71,31 @@ info: CosmosDataSourceExtension[0]
 info: Cosmos.DataTransfer.Core.RunCommand.CommandHandler[0]
       Data transfer complete
 ```
+
+### (おまけ) コマンドラインオプション
+
+```
+PS D:\temp\dmt\dmt-2.1.4-win-x64\windows-package> ./dmt --help
+Description:
+  Azure data migration tool
+
+Usage:
+  dmt [command] [options] [[--] <additional arguments>...]]
+
+Options:
+  -from, --source <source>                     The extension to read data.
+  -to, --destination, --sink, --target <sink>  The extension to write data.
+  --settings <settings>                        The settings file. (default: migrationsettings.json)
+  -?, -h, --help                               Show help and usage information
+  --version                                    Show version information
+
+Commands:
+  <default>, run  Runs data transfer operation using selected source and sink
+  list            Loads and lists all available extensions
+  init            Creates template settings file for use as input
+  settings        Loads and lists extension settings structure
+
+Additional Arguments:
+  Extension specific settings can be provided as additional arguments in the form:
+  --<Source|Sink>Settings:<name> <value>  ex: --SourceSettings:FilePath MyDataFile.json
+```
