@@ -29,7 +29,7 @@
 > ソース(Source): データ転送元  
 > シンク(Sink)  : データ転送先  
 
-- `migrationSetting.json`を編集する。以下はソースをCosmosDB、シンクをJSONファイルとする設定
+- `migrationsetting.json`を編集する。以下はソースをCosmosDB、シンクをJSONファイルとする設定
 
 ```JSON
 {
@@ -50,7 +50,7 @@
 
 ### 実行
 
-- dmt.exeのあるフォルダにて以下コマンドにて実行する。同じフォルダにある`migrationSetting.json`が参照される。
+- dmt.exeのあるフォルダにて以下コマンドにて実行する。同じフォルダにある`migrationsetting.json`が参照される。
 ```
 ./dmt
 ```
