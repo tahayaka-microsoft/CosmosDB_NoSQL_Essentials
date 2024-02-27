@@ -75,7 +75,7 @@ info: Cosmos.DataTransfer.Core.RunCommand.CommandHandler[0]
 ### (おまけ) コマンドラインオプション
 
 ```
-PS D:\temp\dmt\dmt-2.1.4-win-x64\windows-package> ./dmt --help
+PS X:xx\xx\xx> ./dmt --help
 Description:
   Azure data migration tool
 
