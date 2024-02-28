@@ -7,4 +7,4 @@
 
 1. [Cosmos DB for NoSQLの操作](./01_CreateAndOperationBasic_CosmosDB.md)
 
-1. [Cosmos DB for NoSQLのTips&Tricks](./02_CosmosDB_TipsandTricks.md)
+1. [Cosmos DB for NoSQLのTips&Tricks](./02_TipsAndTricks.md)
