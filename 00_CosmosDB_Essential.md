@@ -7,8 +7,8 @@
 <img src="./assets/00_01.png" width=600>
 
 - Cosmos DBはMicrosoft Azureで利用できる**NoSQLデータストア**
-    - NoSQLはいわゆる **データベース(RDBMS)** とは異なる概念と理解するのが良い
     - NoSQLはファイルの簡便性とRDBMSの高速検索の良いところを両方持っている
+    - NoSQLはいわゆる **データベース(RDBMS)** とは異なる概念と理解するのが良い
     - NoSQLはRDBMSを補完する概念であり、排他的ではない 
 
 ## CosmosDBの優位性
