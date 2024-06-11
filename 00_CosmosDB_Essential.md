@@ -410,6 +410,7 @@ graph LR
            コンテナー)]
         A--自動連携-->D
         G<-.読み出しポイント管理.->D
+        style G stroke-dasharray: 5 5
     end
     subgraph af1[Azure Functions]
         B[["Cosmos DB Trigger"]] 
