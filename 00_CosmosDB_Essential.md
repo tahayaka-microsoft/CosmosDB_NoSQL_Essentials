@@ -405,7 +405,9 @@ graph LR
     subgraph Cosmos DB
         A[(コンテナー)]
         D[/Change Feed/]
-        A--自動連携-->D 
+        B[(リースコンテナー)]
+        A--自動連携-->D
+        B<--読み出しポイント管理-->D
     end
     subgraph af1[Azure Functions]
         B[["Cosmos DB Trigger"]] 
