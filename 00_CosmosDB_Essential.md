@@ -409,7 +409,7 @@ graph LR
         G[(リース
            コンテナー)]
         A--自動連携-->D
-        G<--読み出しポイント管理-->D
+        G<-.読み出しポイント管理.->D
     end
     subgraph af1[Azure Functions]
         B[["Cosmos DB Trigger"]] 
